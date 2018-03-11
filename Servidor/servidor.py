@@ -1,22 +1,20 @@
 import socket
 
-s = socket.socket()
-host = socket.gethostname()
-port = 12221
-s.bind((host, port))
+HOST='localhost'
+PORT=5000
+BUFFER_SIZE = 20
 
-s.listen(5)
-c = None
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+s.bind((HOST,PORT))
+s.listen(1)
 
-while True:
-   if c is None:
-       # Halts
-       print( '[Waiting for connection...]')
-       c, addr = s.accept()
-       print ('Got connection from', addr)
-   else:
-       # Halts
-       print( '[Waiting for response...]')
-       print (c.recv(1024))
-       q = input("Enter something to this client: ")
-       c.send(q)
+conn,addr=s.accept()
+
+print("Connection address", addr)
+while 1:
+    data = conn.recv(BUFFER_SIZE)
+    if not data: break
+    decodedData=data.decode()
+    print("received data: "+ decodedData)
+    conn.send(data)  # echo
+conn.close()
