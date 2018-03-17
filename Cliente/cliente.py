@@ -1,51 +1,53 @@
 import sys
 import socket
-import select
-
-from threading import *
-
-from socket import *
-import _thread, time
-import msvcrt as m
+import _thread
 
 
-def recvMsg(sock):
+def recibirMsg(sock):
+
     while True:
-        recvmsg = sock.recv(1024)
-        print(
-        '<Server>>> ' + recvmsg.decode())
+        data = sock.recv(4096)
+        if not data:
+            print(
+                '\nDisconnected from chat server')
+            sys.exit()
+        else:
+            # print data
+            sys.stdout.write(data.decode())
+            sys.stdout.write('[Me] ');
+            sys.stdout.flush()
 
+def chat_client():
 
-if __name__ == '__main__':
 
     host = "localhost"
     port = 5000
 
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+    # connect to remote host
     try:
-        s = socket(AF_INET, SOCK_STREAM)
         s.connect((host, port))
-
-        _thread.start_new_thread(recvMsg, (s,))
-
-        time.sleep(1)
-        nickmsg = input('My Nickname: ')
-        s.send(nickmsg)
-
-        time.sleep(2)
-        print(
-        'Wait!...')
-
-        while True:
-            if m.getch() != '\r':
-                continue
-            sendmsg = input(' - Send: ')
-            if sendmsg == 'exit()':
-                break
-            s.send(sendmsg)
-
-        s.close()
     except:
         print(
-        'Wrong address!')
+        'Unable to connect')
+        sys.exit()
 
-    input('Exit client (Press any key!)')
+    _thread.start_new_thread(recibirMsg, (s,))
+
+    print(
+    'Connected to remote host. You can start sending messages')
+    sys.stdout.write('[Me] ');
+    sys.stdout.flush()
+
+
+    while 1:
+        # user entered a message
+        msg = sys.stdin.readline()
+        s.send(str.encode(msg))
+        sys.stdout.write('[Me] ');
+        sys.stdout.flush()
+
+
+chat_client()
