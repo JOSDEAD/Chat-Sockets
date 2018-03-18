@@ -2,7 +2,7 @@ import sys
 import socket
 import _thread
 
-
+#hilo para recibir mensajes
 def recibirMsg(sock):
 
     while True:
@@ -21,9 +21,8 @@ def recibirMsg(sock):
                 sys.stdout.write('[Yo] ');
                 sys.stdout.flush()
 
-
+#inicio del chat y ciclo para enviar peticiones y mensajes
 def chat_client():
-
     host = input("Escriba el IP(default=localhost):")
     port = input("Escriba el Puerto(default=5000):")
     host = host if (len(host) > 0) else 'localhost'
