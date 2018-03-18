@@ -12,9 +12,14 @@ def recibirMsg(sock):
             sys.exit()
         else:
             # print data
-            sys.stdout.write(data.decode())
-            sys.stdout.write('[Yo] ');
-            sys.stdout.flush()
+            if(data.decode()=="@IP"):
+                sys.stdout.write("\r[Server] IP del servidor= "+str(sock.getpeername()[0])+'\n')
+                sys.stdout.write('[Yo] ');
+                sys.stdout.flush()
+            else:
+                sys.stdout.write(data.decode())
+                sys.stdout.write('[Yo] ');
+                sys.stdout.flush()
 
 
 def chat_client():
@@ -35,7 +40,6 @@ def chat_client():
 
     #hilo para empezar a recibir mensajes
     _thread.start_new_thread(recibirMsg, (s,))
-
     print('\nSe ha establecido conexion')
     sys.stdout.write('[Yo] ');
     sys.stdout.flush()

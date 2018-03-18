@@ -21,8 +21,8 @@ port = int(port) if (len(port) > 0) else 5000"""""
 servidor_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 servidor_socket.bind((HOST,PORT))
 servidor_socket.listen(10)
-
 SOCKET_LIST.append(servidor_socket)
+
 
 
 
@@ -60,7 +60,16 @@ def broadcast(server_socket, sock, message):
                 if socket in SOCKET_LIST:
                     SOCKET_LIST.remove(socket)
 
-
+def enviarATodos(server_socket,msg):
+    for socket in SOCKET_LIST:
+        # enviar solo a receptores
+        if socket != server_socket:
+            try:
+                socket.send(str.encode(msg))
+            except:
+                socket.close()
+                if socket in SOCKET_LIST:
+                    SOCKET_LIST.remove(socket)
 while True:
     ready_to_read, ready_to_write, in_error = select.select(SOCKET_LIST, [], [], 0)
     for sockets in ready_to_read:
@@ -69,7 +78,7 @@ while True:
             newSocket,addr= servidor_socket.accept()
             SOCKET_LIST.append(newSocket)
             print("Cliente (%s, %s) connectado" % addr)
-            broadcast(servidor_socket, sockets, "[%s:%s] entro al chat\n" % addr)
+            broadcast(servidor_socket, sockets, "\r[%s:%s] entro al chat\n" % addr)
         else:
             try:
                 data= sockets.recv(BUFFER_SIZE)
@@ -80,7 +89,12 @@ while True:
                         if "@hora " in decodedData:
                             pais=decodedData.replace("@hora ", '')
                             obtenerHora(servidor_socket,pais)
-
+                        if "@IP" in decodedData:
+                            enviarATodos(servidor_socket,"@IP")
+                        if "@ip" in decodedData:
+                            enviarATodos(servidor_socket, "@IP")
+                        if "@procesos" in decodedData:
+                            enviarATodos(servidor_socket,"\rHay "+str(len(SOCKET_LIST)-1)+" procesos en el servidor\n")
 
 
                 else:
