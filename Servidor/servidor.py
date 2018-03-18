@@ -6,7 +6,6 @@ HOST=''
 PORT=5000
 BUFFER_SIZE = 1024
 SOCKET_LIST=[]
-
 #Obtener lista de paises y sus zonas horarias
 response = urllib.request.Request('http://api.timezonedb.com/v2/list-time-zone?key=07T61XN44HZU&format=json')
 r = urllib.request.urlopen(response).read()
@@ -16,8 +15,10 @@ paises = json.loads(jsonPaises)
 
 
 
-""""port = input("Escriba el Puerto(default=5000):")
-port = int(port) if (len(port) > 0) else 5000"""""
+port = input("Escriba el Puerto(default=5000):")
+port = int(port) if (len(port) > 0) else 5000
+nombreServer = input("Escriba el nombre del servidor(default=Servidor):")
+nombreServer = nombreServer if (len(nombreServer) > 0) else "Servidor"
 servidor_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 servidor_socket.bind((HOST,PORT))
 servidor_socket.listen(10)
@@ -94,9 +95,15 @@ while True:
                         if "@ip" in decodedData:
                             enviarATodos(servidor_socket, "@IP")
                         if "@procesos" in decodedData:
-                            enviarATodos(servidor_socket,"\rHay "+str(len(SOCKET_LIST)-1)+" procesos en el servidor\n")
-
-
+                            enviarATodos(servidor_socket,"\r[Server]Hay "+str(len(SOCKET_LIST)-1)+" procesos en el servidor\n")
+                        if "@help" in decodedData:
+                            print("entro")
+                            sockets.send(str.encode("\nEl servidor cuenta con los siguientes comandos:\n@hora pais. Este comando devuelve la hora del pais consultado, el nombre del pais tiene que estar en ingles(Ejemplo de uso: @hora Italy).\n"+
+                                         "@IP. Este comando vuelve el IP del servidor(Ejemplo de uso: @IP).\n@procesos. Este comando devuelvo todos los procesos que hay en el servidor, esto representa los cliente conectados al servidor(Ejemplo de uso: @procesos).\n"+
+                                         "@nombre. Este comando vuelve el nombre del servidor(Ejemplo de uso: @nombre).\n@help. Este comando muestra los comandos posibles hacia el servidor(Ejemplo de uso: @help).\n"))
+                        if "@nombre" in decodedData:
+                            enviarATodos(servidor_socket,
+                                         "\r[Server]Mi nombre es:"+nombreServer+ "\n")
                 else:
                     if sockets in SOCKET_LIST:
                         SOCKET_LIST.remove(sockets)

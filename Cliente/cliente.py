@@ -40,7 +40,8 @@ def chat_client():
 
     #hilo para empezar a recibir mensajes
     _thread.start_new_thread(recibirMsg, (s,))
-    print('\nSe ha establecido conexion')
+    print('\nSe ha establecido conexion.')
+    print('Escriba @help para ver los comandos.\n')
     sys.stdout.write('[Yo] ');
     sys.stdout.flush()
 
